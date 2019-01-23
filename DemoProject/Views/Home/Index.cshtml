@@ -1,0 +1,40 @@
+﻿@page
+
+
+<div class=" container">
+
+
+    <!-- User section -->
+    <div class="row">
+        <div class="col-2">
+            <div class="row">Online Users</div>
+
+        </div>
+
+        <!-- Chat section-->
+
+        <div class="col-10 ">
+
+            <!-- Messagebox -->
+            <div class="chat-container modal-body" id="messagesList">
+            </div>
+
+            <!-- Input bar and button -->
+            <div class="input-group mb-3 messageBar">
+                <input type="text" id="messageInput" class="form-control" placeholder="Chat message" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" id="sendButton" type="button">Send</button>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+<script src="js/date.format.js"></script>
