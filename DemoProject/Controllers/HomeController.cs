@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DemoProject.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace DemoProject.Controllers
 {
@@ -25,24 +26,70 @@ namespace DemoProject.Controllers
             return View();
         }
 
-        public IActionResult About()
+        [Route("Authenticate")]
+        [HttpPost]
+        public IActionResult Authenticate([FromForm]Accounts account)
         {
-            ViewData["Message"] = "Your application description page.";
+            DemoProjectContext context = new DemoProjectContext();
+            if (account.Username != null)
+            {
+                Accounts dbAcc = context.Accounts.Find(account.Username);
+                if (dbAcc.Password == account.Password)
+                {
+                    HttpContext.Session.SetString("username", account.Username);
+                    return View("chat");
+                }
+                else
+                {
+                    ViewBag.error = "Wrong Password";
+                    return View("login");
+                }
 
-            return View();
+            }
+
+            else
+            {
+                if (context != null)
+                {
+                    ViewBag.error = "Invalid Account  + c";
+                }
+                else
+                    ViewBag.error = "Invalid Account";
+                return View("index");
+
+            }
         }
 
-        public IActionResult Contact()
+        [Route("logout")]
+        [HttpGet]
+        public IActionResult Logout()
         {
-            ViewData["Message"] = "Your contact page.";
+            HttpContext.Session.Remove("username");
+            return RedirectToAction("index");
+        }
+      
 
-            return View();
+        [Route("register")]
+        [HttpPost]
+        public IActionResult Register([FromForm]Accounts account)
+        {
+            DemoProjectContext context = new DemoProjectContext();
+            if (account.Username != null)
+            {
+                if (context.Accounts.Find(account.Username) == null)
+                {
+                    context.Accounts.Add(account);
+                    context.SaveChanges();
+                    return View("index");
+                }
+            }
+
+            ViewBag.error = "Wrong input";
+            return View("register");
+
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

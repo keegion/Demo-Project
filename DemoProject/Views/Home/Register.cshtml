@@ -9,22 +9,22 @@
         <div class="card-body registerForm">
          
             <h4 class="card-title mb-4 mt-1">Register</h4>
-            <form>
+            <form method="Post" asp-action="register">
                 <div class="form-group">
                     <label>Username</label>
-                    <input name="" class="form-control" placeholder="Choose your username">
+                    <input name="Username" class="form-control" placeholder="Choose your username">
                 </div> <!-- form-group// -->
                 <div class="form-group">
 
                     <label>E-mail</label>
-                    <input class="form-control" placeholder="Please provide your E-mail" type="email">
+                    <input name="Email" class="form-control" placeholder="Please provide your E-mail" type="email">
 
                 </div><!-- form-group// -->
 
                 <div class="form-group">
 
                     <label>Password</label>
-                    <input class="form-control" placeholder="Select password" type="password">
+                    <input name="Password"class="form-control" placeholder="Select password" type="password">
                 </div><!-- form-group// -->
                 <div class="form-group">
 

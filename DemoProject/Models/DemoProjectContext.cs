@@ -16,6 +16,7 @@ namespace DemoProject.Models
         }
 
         public virtual DbSet<Accounts> Accounts { get; set; }
+ 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -46,6 +47,8 @@ namespace DemoProject.Models
                     .HasMaxLength(30)
                     .IsUnicode(false);
             });
+
+           
         }
     }
 }

@@ -34,7 +34,7 @@ function SendMessage() {
 
     var message = document.getElementById("messageInput").value;
     if (message) {
-        var user = "TestUser";
+        var user = "testuser";
         var time = FormatDate(new Date());
         connection.invoke("SendMessage", user, time, message).catch(function (err) {
             return console.error(err.toString());
