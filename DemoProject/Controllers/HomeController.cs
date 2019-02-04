@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DemoProject.Models;
 using Microsoft.AspNetCore.Http;
+using DemoProject.Hubs;
 
 namespace DemoProject.Controllers
 {
@@ -26,34 +24,34 @@ namespace DemoProject.Controllers
             return View();
         }
 
-        [Route("Authenticate")]
+        [Route("login")]
         [HttpPost]
-        public IActionResult Authenticate([FromForm]Accounts account)
+        public IActionResult Login([FromForm]Accounts account)
         {
             DemoProjectContext context = new DemoProjectContext();
             if (account.Username != null)
             {
-                Accounts dbAcc = context.Accounts.Find(account.Username);
-                if (dbAcc.Password == account.Password)
+              Accounts dbAcc = context.Accounts.Find(account.Username);
+                
+                if (dbAcc !=null && dbAcc.Password == account.Password)
                 {
+                  
                     HttpContext.Session.SetString("username", account.Username);
+                    ChatHub chat = new ChatHub();
+                   chat.AddUser(account.Username);
                     return View("chat");
                 }
                 else
                 {
                     ViewBag.error = "Wrong Password";
-                    return View("login");
+                    return View("index");
                 }
 
             }
 
             else
             {
-                if (context != null)
-                {
-                    ViewBag.error = "Invalid Account  + c";
-                }
-                else
+             
                     ViewBag.error = "Invalid Account";
                 return View("index");
 
@@ -64,7 +62,11 @@ namespace DemoProject.Controllers
         [HttpGet]
         public IActionResult Logout()
         {
+
+            ChatHub chat = new ChatHub();
+            chat.RemoveUser(HttpContext.Session.GetString("username"));
             HttpContext.Session.Remove("username");
+            
             return RedirectToAction("index");
         }
       
