@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using DemoProject.Models;
 using Microsoft.AspNetCore.Http;
 using DemoProject.Hubs;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DemoProject.Controllers
 {
@@ -26,33 +27,40 @@ namespace DemoProject.Controllers
 
         [Route("login")]
         [HttpPost]
-        public IActionResult Login([FromForm]Accounts account)
+        public IActionResult Login([FromForm]WebAccount webAcc)
         {
-            DemoProjectContext context = new DemoProjectContext();
-            if (account.Username != null)
+            if (ModelState.IsValid)
             {
-              Accounts dbAcc = context.Accounts.Find(account.Username);
-                
-                if (dbAcc !=null && dbAcc.Password == account.Password)
+                DemoProjectContext context = new DemoProjectContext();
+                Accounts dbAcc = context.Accounts.Find(webAcc.Username);
+                if (dbAcc != null)
                 {
-                  
-                    HttpContext.Session.SetString("username", account.Username);
-                    ChatHub chat = new ChatHub();
-                   chat.AddUser(account.Username);
-                    return View("chat");
+                    if (dbAcc.Password == webAcc.Password)
+                    {
+
+                        HttpContext.Session.SetString("username", webAcc.Username);
+                        ChatHub chat = new ChatHub();
+                        chat.AddUser(webAcc.Username);
+                        return View("chat");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Password", "Wrong Password");
+                        return View("index", webAcc);
+                    }
                 }
                 else
                 {
-                    ViewBag.error = "Wrong Password";
+                    ModelState.AddModelError("", "Wrong username or Connection error");
                     return View("index");
                 }
+
 
             }
 
             else
             {
-             
-                    ViewBag.error = "Invalid Account";
+
                 return View("index");
 
             }
@@ -66,28 +74,37 @@ namespace DemoProject.Controllers
             ChatHub chat = new ChatHub();
             chat.RemoveUser(HttpContext.Session.GetString("username"));
             HttpContext.Session.Remove("username");
-            
+
             return RedirectToAction("index");
         }
-      
+
 
         [Route("register")]
         [HttpPost]
-        public IActionResult Register([FromForm]Accounts account)
+        public IActionResult Register([FromForm]RegisterModel RAcc)
         {
-            DemoProjectContext context = new DemoProjectContext();
-            if (account.Username != null)
+            if (ModelState.IsValid)
             {
-                if (context.Accounts.Find(account.Username) == null)
-                {
-                    context.Accounts.Add(account);
-                    context.SaveChanges();
-                    return View("index");
+                DemoProjectContext context = new DemoProjectContext();
+                    if (context.Accounts.Find(RAcc.Username) == null)
+                    {
+                    Accounts Dacc = new Accounts {Username = RAcc.Username, Email = RAcc.Email, Password = RAcc.Password };
+                   
+                        context.Accounts.Add(Dacc);
+                        context.SaveChanges();
+                        return View("index");
                 }
-            }
-
-            ViewBag.error = "Wrong input";
+                else
+                {
+                    ModelState.AddModelError("Username", "Username already exist");
+                    return View("register", RAcc);
+                }
+                }
+            
             return View("register");
+
+
+
 
         }
 

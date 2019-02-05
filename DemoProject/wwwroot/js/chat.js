@@ -1,12 +1,15 @@
-﻿
+﻿"use strict";
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 
+window.onload = Load();
 
 function Load() {
-    connection.invoke("OnlineUsers");
+    Invoke();
 }
-
+function Invoke() {
+    setTimeout(function () { connection.invoke("OnlineUsers"); }, 1000);
+}
 //recieve message
 connection.on("ReceiveMessage", function (user, time, message) {
 
@@ -21,7 +24,7 @@ connection.on("ReceiveMessage", function (user, time, message) {
 //List online Users
 connection.on("Online", function (connectedUsers) {
 
-    $('#onlineUsers').html("");
+    $('#onlineUsers').html("<hr>");
     connectedUsers.forEach(function (user) {
         var userM = '<b>' + user + '<b><hr><br>'
         $('#onlineUsers').append(userM);
@@ -75,5 +78,3 @@ function clearInput() {
         $(this).val(''); //hide form values
     });
 }
-
-window.onload = Load;

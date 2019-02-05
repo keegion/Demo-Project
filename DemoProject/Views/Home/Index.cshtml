@@ -1,4 +1,4 @@
-﻿@page
+﻿@model WebAccount
 
 
 <div class="container">
@@ -10,19 +10,22 @@
             <a href="home/Register" class="float-right btn btn-outline-primary">Register</a>
             <h4 class="card-title mb-4 mt-1">Log in</h4>
             <form method="post" asp-action="login">
+                <div asp-validation-summary="All"></div>
                 <div class="form-group">
-                    <label>Username</label>
-                    <input name="Username" class="form-control" placeholder="Username">
+                    <label asp-for="Username">Username</label>
+                    <input asp-for="Username" name="Username" class="form-control" placeholder="Username">
+                    <span asp-validation-for="Username"></span>
                 </div>
                 <div class="form-group">
 
-                    <label>Your password</label>
-                    <input name="Password" class="form-control" placeholder="******" type="password">
+                    <label asp-for="Password">Your password</label>
+                    <input asp-for="Password" name="Password" class="form-control" placeholder="******" type="password">
+                    <span asp-validation-for="Password"></span>
                 </div>
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-block" id="loginButton" value="login"> Login  </button>
-                </div> <!-- form-group// -->
+                </div>
             </form>
         </div>
 
