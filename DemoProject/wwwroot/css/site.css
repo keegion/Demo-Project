@@ -14,14 +14,15 @@ body {
     padding-top: 50px;
 }
 .chat-container {
-    min-height: 600px;
-    max-height: 600px;
+    min-height: 400px;
+    max-height: 400px;
+    min-width: 200px;
     overflow-y: scroll;
-  
 }
 .login-container {
     margin: auto;
-    width: 50%;
+    min-width: 100px;
+   
 }
 .messageBar {
     padding-top: 20px;
