@@ -46,6 +46,10 @@ namespace DemoProject.Models
                 entity.Property(e => e.Password)
                     .HasMaxLength(30)
                     .IsUnicode(false);
+
+                entity.Property(e => e.ImgSRC)
+                    .HasMaxLength(30)
+                    .IsUnicode(false);
             });
 
            

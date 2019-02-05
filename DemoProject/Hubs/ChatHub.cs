@@ -12,28 +12,34 @@ namespace DemoProject.Hubs
     public class ChatHub : Hub
     {
         static List<ConnectedAcc> ConnectedUsers = new List<ConnectedAcc>();
+        static List<Messages> AllMessages = new List<Messages>();
 
 
-        //Create a new object to ConnectedUsers list and broadcast new user joined message/load online users list
+        //Creates new user to ConnectedUsers list, loads userlist/messages
         public async Task Connect(string user)
         {
 
             var id = Context.ConnectionId;
- 
+        
             if(ConnectedUsers.SingleOrDefault(x => x.Username == user)==null)
             {
-                ConnectedUsers.Add(new ConnectedAcc { Username = user, ID = id });
+                string UserImg = GetUserImage(user);
+                ConnectedUsers.Add(new ConnectedAcc { Username = user, ID = id, IMG = UserImg});
                 await Clients.AllExcept(id).SendAsync("Join", user);
-                
+                await Clients.Caller.SendAsync("Messages", AllMessages);
+
             }
             await Clients.All.SendAsync("Online", ConnectedUsers);
+            
 
         }
-        //Sends chat message to all clients
+        //Sends chat message to all clients and adds it to message list
         public async Task SendMessage(string user, string time, string message)
         {
+            string UserImg = GetUserImage(user);
+            AllMessages.Add(new Messages { Username = user, Message = message, Time = time, IMG = UserImg});
 
-            await Clients.All.SendAsync("ReceiveMessage", user, time, message, ConnectedUsers);
+            await Clients.All.SendAsync("ReceiveMessage", user, time, message, UserImg);
         }
   
 
@@ -54,6 +60,46 @@ namespace DemoProject.Hubs
             }
 
             return base.OnDisconnectedAsync(exception);
+        }
+        //Get user image path from database
+        public string GetUserImage(string username)
+        {
+            string ImgSRC = "images/test.png";
+            try
+            {
+                DemoProjectContext DB = new DemoProjectContext();
+                Accounts DBACC = DB.Accounts.Find(username);
+                if(DBACC.ImgSRC =="" || DBACC.ImgSRC == null)
+                {
+                    ImgSRC = "images/test.png";
+                }else
+                {
+                    ImgSRC = DBACC.ImgSRC;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            return ImgSRC;
+        }
+
+        public void UploadImgToDB(string path, string username)
+        {
+            if (username != null)
+            {
+                DemoProjectContext DB = new DemoProjectContext();
+                Accounts DBACC = DB.Accounts.Find(username);
+                if (DBACC.Username != null)
+                {
+
+
+                    DBACC.ImgSRC = path;
+                   
+
+                    DB.SaveChanges();
+                }
+            }
         }
     }
 }

@@ -6,10 +6,10 @@ connection.start().catch(function (err) {
     return console.error(err.toString());
 });
 
-//call Load on page load which will call load user function
+//call Invoke method, when page is done loading.
 window.onload = Invoke();
 
-//Load Online users one second after connected
+//Call Connect method, which will return Online users,old messages and notify others you joined the chat
 function Invoke() {
 
     var user = document.getElementById("username").innerHTML;
@@ -17,11 +17,12 @@ function Invoke() {
 
 }
 //recieve message
-connection.on("ReceiveMessage", function (user, time, message) {
-
-    var msg = '<b>' + user + '</b> ' + time + ' </br>' + message + '<hr>';
+connection.on("ReceiveMessage", function (user, time, message, userimg) {
+  
+    var msg = '<div class=row><div class="col- chatImg"><img class="img-circle" src="' + userimg + '" width="40" height="40" /></div><class="col- div><b>'
+        + user + '</b> ' + time + ' </br>' + message + '</div></div><hr>';
     $('#messagesList').append(msg);
-
+ 
 
     //scroll down automatically
     $("#messagesList").stop().animate({ scrollTop: $("#messagesList")[0].scrollHeight }, 1000);
@@ -29,14 +30,25 @@ connection.on("ReceiveMessage", function (user, time, message) {
 });
 //List online Users
 connection.on("Online", function (connectedUsers) {
+    
+    $('#onlineUsers').html("<hr>");
+    connectedUsers.forEach(function (user) {
+        var userM = '<img class="img-circle" src="' + user.img + '" width="40" height="40" />   ' + user.username + '<hr><br>'
+        $('#onlineUsers').append(userM);
+       
+    });
+});
+//Load all messages
+connection.on("Messages", function (connectedUsers) {
 
     $('#onlineUsers').html("<hr>");
     connectedUsers.forEach(function (user) {
-        var userM = '<b>' + user.username + '<b><hr><br>'
-        console.log(user);
-        $('#onlineUsers').append(userM);
-
+        var msg = '<div class=row><div class="col- chatImg"><img class="img-circle" src="' + user.img + '" width="40" height="40" /></div><class="col- div><b>'
+            + user.username + '</b> ' + user.time + ' </br>' + user.message + '</div></div><hr>';
+        $('#messagesList').append(msg);
+        
     });
+
 });
 //User Disconnected
 connection.on("Disconnected", function (user) {
@@ -103,4 +115,8 @@ function clearInput() {
     $(".messageBar :input").each(function () {
         $(this).val(''); //hide form values
     });
+}
+
+function test() {
+    alert('');
 }

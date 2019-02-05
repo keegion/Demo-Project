@@ -1,0 +1,23 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using DemoProject.Hubs;
+@{
+var img ="";
+ChatHub hub = new ChatHub();
+img = hub.GetUserImage(Context.Session.GetString("username"));
+}
+
+<div class="container" align="center">
+    <img class="img-circle" src="@img" width="80" height="80" /><br />
+    <b>Change your avatar, Please use .png format.</b><br /><br />
+    <form asp-action="UploadImage" method="post" enctype="multipart/form-data">
+
+        <input type="file" name="file" />
+        <button type="submit">Upload Image</button>
+    </form>
+    <br />
+
+
+
+</div>
+
+

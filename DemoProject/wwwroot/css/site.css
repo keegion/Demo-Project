@@ -3,6 +3,9 @@ for details on configuring this project to bundle and minify static web assets. 
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    min-height: 100%;
+    width: 100%;
+    
     
 }
 
@@ -14,17 +17,23 @@ body {
     padding-top: 50px;
 }
 .chat-container {
+    padding-left: 50px;
     min-height: 400px;
-    max-height: 400px;
     min-width: 200px;
     overflow-y: scroll;
+    height: 65vh;
 }
 .chatUser-container {
-    min-width: 100px;
-    max-height: 400px;
+    min-width: 200px;
     min-height: 400px;
     overflow-y: scroll;
+    height: 65vh;
+    padding-right: 10px;
 }
+.chatImg{
+    padding-right: 10px;
+}
+
 
 .login-container {
     margin: auto;
