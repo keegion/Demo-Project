@@ -19,10 +19,15 @@ body {
     min-width: 200px;
     overflow-y: scroll;
 }
+.chatUser-container {
+    min-width: 100px;
+    max-height: 400px;
+    min-height: 400px;
+    overflow-y: scroll;
+}
+
 .login-container {
     margin: auto;
-    min-width: 100px;
-   
 }
 .messageBar {
     padding-top: 20px;

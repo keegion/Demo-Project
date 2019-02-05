@@ -2,13 +2,19 @@
 var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
 
 
-window.onload = Load();
+connection.start().catch(function (err) {
+    return console.error(err.toString());
+});
 
-function Load() {
-    Invoke();
-}
+//call Load on page load which will call load user function
+window.onload = Invoke();
+
+//Load Online users one second after connected
 function Invoke() {
-    setTimeout(function () { connection.invoke("OnlineUsers"); }, 1000);
+
+    var user = document.getElementById("username").innerHTML;
+    setTimeout(function () { connection.invoke("Connect", user); }, 500);
+
 }
 //recieve message
 connection.on("ReceiveMessage", function (user, time, message) {
@@ -26,16 +32,36 @@ connection.on("Online", function (connectedUsers) {
 
     $('#onlineUsers').html("<hr>");
     connectedUsers.forEach(function (user) {
-        var userM = '<b>' + user + '<b><hr><br>'
+        var userM = '<b>' + user.username + '<b><hr><br>'
+        console.log(user);
         $('#onlineUsers').append(userM);
 
     });
 });
+//User Disconnected
+connection.on("Disconnected", function (user) {
 
-connection.start().catch(function (err) {
-    connection.invoke("AddOnlineUser", "test33");
-    return console.error(err.toString());
+    var msg = '<b>' + user + '</b> has disconnected from the server<hr>';
+    $('#messagesList').append(msg);
+
+
+    //scroll down automatically
+    $("#messagesList").stop().animate({ scrollTop: $("#messagesList")[0].scrollHeight }, 1000);
+
 });
+//User Joined
+connection.on("Join", function (user) {
+
+    var msg = '<b>' + user + '</b> has joined the server<hr>';
+    $('#messagesList').append(msg);
+
+
+    //scroll down automatically
+    $("#messagesList").stop().animate({ scrollTop: $("#messagesList")[0].scrollHeight }, 1000);
+
+});
+
+
 
 //Send Button
 document.getElementById("sendButton").addEventListener("click", function (event) {
@@ -64,7 +90,7 @@ function SendMessage() {
         
         clearInput();
     }
-    connection.invoke("OnlineUsers");
+  
 }
 
 //date time format

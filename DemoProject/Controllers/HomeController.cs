@@ -39,8 +39,6 @@ namespace DemoProject.Controllers
                     {
 
                         HttpContext.Session.SetString("username", webAcc.Username);
-                        ChatHub chat = new ChatHub();
-                        chat.AddUser(webAcc.Username);
                         return View("chat");
                     }
                     else
@@ -71,8 +69,6 @@ namespace DemoProject.Controllers
         public IActionResult Logout()
         {
 
-            ChatHub chat = new ChatHub();
-            chat.RemoveUser(HttpContext.Session.GetString("username"));
             HttpContext.Session.Remove("username");
 
             return RedirectToAction("index");
