@@ -9,12 +9,28 @@ using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace DemoProject.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IHostingEnvironment _appEnvironment;
 
+
+        public HomeController(
+                    UserManager<ApplicationUser> userManager,
+                    SignInManager<ApplicationUser> signInManager,
+                    IHostingEnvironment appEnvironment
+                    )
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _appEnvironment = appEnvironment;
+
+        }
         public IActionResult Index()
         {
             return View();
@@ -32,115 +48,103 @@ namespace DemoProject.Controllers
         [Route("settings")]
         public IActionResult Settings()
         {
-
-            return View("settings");
+            if (_signInManager.IsSignedIn(User))
+            {
+                return View("settings");
+            }
+            else
+            {
+                return View("index");
+            }
         }
         [Route("chat")]
         public IActionResult Chat()
         {
 
-            return View("chat");
+            if (_signInManager.IsSignedIn(User))
+            {
+                return View("chat");
+            }
+            else
+            {
+                return View("index");
+            }
 
         }
-
-
-
 
         [Route("login")]
         [HttpPost]
-        public IActionResult Login([FromForm]WebAccount webAcc)
+        public async Task<IActionResult> Login([FromForm]WebAccount webAcc)
         {
             if (ModelState.IsValid)
             {
-                DemoProjectContext context = new DemoProjectContext();
-                Accounts dbAcc = context.Accounts.Find(webAcc.Username);
-                if (dbAcc != null)
+                var result = await _signInManager.PasswordSignInAsync(webAcc.Username, webAcc.Password, true, lockoutOnFailure: false);
+                if (result.Succeeded)
                 {
-                    if (dbAcc.Password == webAcc.Password)
-                    {
-
-                        HttpContext.Session.SetString("username", webAcc.Username);
-                        return View("chat");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Password", "Wrong Password");
-                        return View("index", webAcc);
-                    }
+                    
+                    return View("chat");
                 }
-                else
+                if (result.IsLockedOut)
                 {
-                    ModelState.AddModelError("", "Wrong username or Connection error");
+
                     return View("index");
                 }
+                else{
 
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View("index");
 
+                }
+                
             }
-
-            else
-            {
-
-                return View("index");
-
-            }
+            return View("index");
+              
         }
+
 
         [Route("logout")]
         [HttpGet]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
 
             HttpContext.Session.Remove("username");
-
+            await _signInManager.SignOutAsync();
             return RedirectToAction("index");
         }
 
-
-        [Route("register")]
-        [HttpPost]
-        public IActionResult Register([FromForm]RegisterModel RAcc)
-        {
-            if (ModelState.IsValid)
-            {
-                DemoProjectContext context = new DemoProjectContext();
-                if (context.Accounts.Find(RAcc.Username) == null)
+       [Route("register")]
+       [HttpPost]
+       public async Task<IActionResult> Register([FromForm]RegisterModel RAcc)
+       {
+           if (ModelState.IsValid)
+           {
+                var user = new ApplicationUser { UserName = RAcc.Username, Email = RAcc.Email, PasswordHash = RAcc.Password, ImgSRC = "images/test.png" };
+                var result = await _userManager.CreateAsync(user, RAcc.Password);
+                if (result.Succeeded)
                 {
-                    Accounts Dacc = new Accounts { Username = RAcc.Username, Email = RAcc.Email, Password = RAcc.Password };
-
-                    context.Accounts.Add(Dacc);
-                    context.SaveChanges();
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                     return View("index");
                 }
-                else
+
+                foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError("Username", "Username already exist");
-                    return View("register", RAcc);
+                    ModelState.AddModelError("", error.Description);
                 }
             }
 
-            return View("register");
+           return View("register");
 
 
+       }
 
-
-        }
-
-        private readonly IHostingEnvironment _appEnvironment;
-
-        public HomeController(IHostingEnvironment appEnvironment)
-
-        {
-            _appEnvironment = appEnvironment;
-
-        }
 
         [Route("UploadImage")]
         [HttpPost]
-
+        
         public async Task<IActionResult> UploadImage(IFormFile file)
 
         {
-            string username = HttpContext.Session.GetString("username");
+            string username = _userManager.GetUserName(User);
             if (file == null || file.Length == 0)
                 return View("settings");
 
@@ -159,12 +163,19 @@ namespace DemoProject.Controllers
             }
 
             ViewData["FilePath"] = path_to_Images;
-            ChatHub chat = new ChatHub();
-            chat.UploadImgToDB(imgPath, username);
+            if (imgPath != null)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                user.ImgSRC = imgPath;
+                await _userManager.UpdateAsync(user);
+
+            }
 
 
             return View("settings");
         }
+     
+        
 
 
 

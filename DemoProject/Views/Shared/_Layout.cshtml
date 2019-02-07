@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - DemoProject</title>
-    @using Microsoft.AspNetCore.Http;
+
+
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -24,20 +25,9 @@
             <a class="navbar-brand" style="color:cornflowerblue">Demo project</a>
             <div class="navbar-collapse collapse" id="navbarSupportedContent">
 
-                @{if (Context.Session.GetString("username") != null)
-                    {
-                        <ul class="nav navbar-nav mr-auto">
-                            <li class="nav-item"><a href="chat" class="nav-link">Chat</a></li>
-                            <li class="nav-item"><a href="settings" class="nav-link">Settings</a></li>
 
-                        </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li class="nav-item"><a href="logout" id="logoutLink" class="nav-link">Log out,  <span id="username">@Context.Session.GetString("username")</span></a></li>
-                        </ul>
-                    }
+                @await Html.PartialAsync("_LoginPartial")
 
-                }
-               
 
 
 
@@ -74,7 +64,7 @@
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-
+   
     @RenderSection("Scripts", required: false)
 </body>
 </html>

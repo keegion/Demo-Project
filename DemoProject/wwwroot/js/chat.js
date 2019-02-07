@@ -13,7 +13,8 @@ window.onload = Invoke();
 function Invoke() {
 
     var user = document.getElementById("username").innerHTML;
-    setTimeout(function () { connection.invoke("Connect", user); }, 500);
+    var path = document.getElementById("path").innerHTML;
+    setTimeout(function () { connection.invoke("Connect", user, path); }, 500);
 
 }
 //recieve message
