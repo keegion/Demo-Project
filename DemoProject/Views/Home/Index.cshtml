@@ -7,7 +7,7 @@
 
 
         <div class="card-body loginForm">
-            <a href="home/Register" class="float-right btn btn-outline-primary">Register</a>
+            <a asp-controller="Home" asp-action="register" class="float-right btn btn-outline-primary">Register</a>
             <h4 class="card-title mb-4 mt-1">Log in</h4>
             <form method="post" asp-action="login">
                 <div asp-validation-summary="All"></div>
