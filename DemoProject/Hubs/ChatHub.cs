@@ -36,7 +36,9 @@ namespace DemoProject.Hubs
         //Sends chat message to all clients and adds it to message list
         public async Task SendMessage(string user, string time, string message)
         {
-            string UserImg = GetUserImage(user);
+            //string UserImg = GetUserImage(user);
+            ConnectedAcc acc = ConnectedUsers.SingleOrDefault(x => x.Username == user);
+            string UserImg = acc.IMG;
             AllMessages.Add(new Messages { Username = user, Message = message, Time = time, IMG = UserImg});
 
             await Clients.All.SendAsync("ReceiveMessage", user, time, message, UserImg);
