@@ -3,12 +3,9 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using DemoProject.Models;
 using Microsoft.AspNetCore.Http;
-using DemoProject.Hubs;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
-using System;
 using Microsoft.AspNetCore.Identity;
 
 namespace DemoProject.Controllers
@@ -31,20 +28,17 @@ namespace DemoProject.Controllers
             _appEnvironment = appEnvironment;
 
         }
+        
         public IActionResult Index()
         {
             return View();
         }
-
+        [Route("register")]
         public IActionResult Register()
         {
             return View();
         }
 
-        public IActionResult Login()
-        {
-            return View();
-        }
         [Route("settings")]
         public IActionResult Settings()
         {
@@ -82,7 +76,7 @@ namespace DemoProject.Controllers
                 if (result.Succeeded)
                 {
                     
-                    return View("chat");
+                    return Redirect("chat");
                 }
                 if (result.IsLockedOut)
                 {

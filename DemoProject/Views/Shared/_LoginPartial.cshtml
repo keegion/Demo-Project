@@ -11,17 +11,17 @@
 
 <span id="path" style="display:none;">@path</span>
 <ul class="nav navbar-nav mr-auto">
-    <li class="nav-item"><a href="chat" class="nav-link">Chat</a></li>
-    <li class="nav-item"><a href="settings" class="nav-link">Settings</a></li>
+    <li class="nav-item"><a asp-controller="Home" asp-action="chat" class="nav-link">Chat</a></li>
+    <li class="nav-item"><a asp-controller="Home" asp-action="settings" class="nav-link">Settings</a></li>
 
 </ul>
 <ul class="nav navbar-nav navbar-right">
-    <li class="nav-item"><a href="logout" id="logoutLink" class="nav-link">Log out,  <span id="username">@UserManager.GetUserName(User)</span></a></li>
+    <li class="nav-item"><a asp-controller="Home" asp-action="logout" id="logoutLink" class="nav-link">Log out,  <span id="username">@UserManager.GetUserName(User)</span></a></li>
 </ul>
 }else{
 <ul class="nav navbar-nav mr-auto">
-    <li class="nav-item"><a href="home/index" class="nav-link">Login</a></li>
-    <li class="nav-item"><a href="home/register" class="nav-link">Register</a></li>
+    <li class="nav-item"><a asp-controller="Home" asp-action="index" class="nav-link">Login</a></li>
+    <li class="nav-item"><a asp-controller="Home" asp-action="register" class="nav-link">Register</a></li>
 
 </ul>
 
