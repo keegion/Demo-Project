@@ -2,12 +2,9 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DemoProject.Models;
-using Microsoft.AspNetCore.Http;
-using System.Web;
 using System;
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+
 
 namespace DemoProject.Hubs
 {
@@ -15,29 +12,29 @@ namespace DemoProject.Hubs
     {
         static List<ConnectedAcc> ConnectedUsers = new List<ConnectedAcc>();
         static List<Messages> AllMessages = new List<Messages>();
-  
 
-            //Creates new user to ConnectedUsers list, loads userlist/messages
-            public async Task Connect(string user, string path)
+
+        //Creates new user to ConnectedUsers list, loads userlist/messages
+        public async Task Connect(string user, string path)
         {
 
             var id = Context.ConnectionId;
-        
-            if(ConnectedUsers.SingleOrDefault(x => x.Username == user)==null)
+
+            if (ConnectedUsers.SingleOrDefault(x => x.Username == user) == null)
             {
-                
-                if (path == "" || path ==null)
+
+                if (path == "" || path == null)
                 {
                     path = "images/test.png";
                 }
-               
+
                 ConnectedUsers.Add(new ConnectedAcc { Username = user, ID = id, IMG = path });
                 await Clients.AllExcept(id).SendAsync("Join", user);
                 await Clients.Caller.SendAsync("Messages", AllMessages);
 
             }
             await Clients.All.SendAsync("Online", ConnectedUsers);
-            
+
 
         }
         //Sends chat message to all clients and adds it to message list
@@ -45,11 +42,11 @@ namespace DemoProject.Hubs
         {
             ConnectedAcc acc = ConnectedUsers.SingleOrDefault(x => x.Username == user);
             string UserImg = acc.IMG;
-            AllMessages.Add(new Messages { Username = user, Message = message, Time = time, IMG = UserImg});
+            AllMessages.Add(new Messages { Username = user, Message = message, Time = time, IMG = UserImg });
 
             await Clients.All.SendAsync("ReceiveMessage", user, time, message, UserImg);
         }
-  
+
 
 
 
@@ -61,7 +58,7 @@ namespace DemoProject.Hubs
             var item = ConnectedUsers.SingleOrDefault(x => x.ID == Context.ConnectionId);
             if (item != null)
             {
-                
+
                 ConnectedUsers.Remove(item);
                 Clients.All.SendAsync("Disconnected", item.Username);
                 Clients.All.SendAsync("Online", ConnectedUsers);
