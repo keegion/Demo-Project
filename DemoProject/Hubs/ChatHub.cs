@@ -26,7 +26,7 @@ namespace DemoProject.Hubs
             if(ConnectedUsers.SingleOrDefault(x => x.Username == user)==null)
             {
                 
-                if (path == "")
+                if (path == "" || path ==null)
                 {
                     path = "images/test.png";
                 }

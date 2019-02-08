@@ -142,8 +142,8 @@ namespace DemoProject.Controllers
             if (file == null || file.Length == 0)
                 return View("settings");
 
-
-            string imgPath = "\\Images\\" + username + ".png";
+            string id = _userManager.GetUserId(User);
+            string imgPath = "\\Images\\" + id + ".png";
             string path_Root = _appEnvironment.WebRootPath;
             string path_to_Images = path_Root + imgPath;
 
@@ -166,7 +166,7 @@ namespace DemoProject.Controllers
             }
 
 
-            return View("settings");
+            return Redirect("settings");
         }
      
         
